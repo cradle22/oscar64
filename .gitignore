@@ -6,7 +6,6 @@
 *.ko
 *.obj
 *.elf
-
 # Linker output
 *.ilk
 *.map
@@ -53,3 +52,7 @@ dkms.conf
 
 # debug information files
 *.dwo
+SmoothTris/.vscode/
+SmoothTris/build/
+SmoothTris/src/tester.c
+SmoothTris/src/tester2.c

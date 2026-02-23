@@ -1,0 +1,15 @@
+{
+    "name": "SmoothTris",
+    "description": "Project SmoothTris",
+    "toolkit": "oscar64",
+    "sources": [
+        "src/smoothtris.c"
+    ],
+    "build": "debug",
+    "definitions": [],
+    "includes": [
+        "src"
+    ],
+    "args": [],
+    "compiler": ""
+}
