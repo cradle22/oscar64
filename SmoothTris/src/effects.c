@@ -235,7 +235,7 @@ void cascadeLineSpr(char line) {
   int startX = BOWLSTARTX / BLOCKSIZE;
   ex_data effectData[10];
 
-  for(int x = 0; x < 10; x++) {
+  for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
     effectData[x].color = Color[40 * (startY + line) + startX + x];
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
@@ -302,7 +302,7 @@ void spiralLineSpr(char line) {
   static const int spiral_dx[10] = { 50,  40,  15, -15, -40, -50, -40, -15,  15,  40};
   static const int spiral_dy[10] = {  0,  29,  47,  47,  29,   0, -29, -47, -47, -29};
 
-  for(int x = 0; x < 10; x++) {
+  for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
     effectData[x].color = Color[40 * (startY + line) + startX + x];
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
