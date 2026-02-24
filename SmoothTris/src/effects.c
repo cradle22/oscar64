@@ -58,6 +58,17 @@ void explodeLineSpr(char line) {
   int startX = BOWLSTARTX / BLOCKSIZE;
   ex_data effectData[10];
 
+  // Random permutation of tile indices for vertical direction assignment
+  char perm[10];
+  for (char i = 0; i < 10; i++) perm[i] = i;
+  for (char i = 9; i > 0; i--) {
+    char j = rand() % (i + 1);
+    char tmp = perm[i]; perm[i] = perm[j]; perm[j] = tmp;
+  }
+
+  // Deterministic horizontal fan spread: 8 fixed positions (spaced 12 apart) + 2 alternating
+  static const int dx_fan[8] = {-55, -43, -31, -19, 19, 31, 43, 55};
+
   // calculate sprite starting positions and velocity
   for(int x = 0; x < 10; x++) {
     effectData[x].first = true;
@@ -66,14 +77,7 @@ void explodeLineSpr(char line) {
     effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
     effectData[x].oldChar = 0;
     effectData[x].last_ptr = 40 * (startY + line) + startX + x;
-    int magX = 22 + (rand() % 45);
-    effectData[x].dx = (rand() & 1) ? magX : -magX;
-    int magY = 22 + (rand() % 45);
-    if(startY + line > 14) {
-      effectData[x].dy = -magY;
-    } else {
-      effectData[x].dy = (rand() & 1) ? magY : -magY;
-    }
+    effectData[x].dx = (x < 8) ? dx_fan[x] : ((rand() & 1) ? 8 : -8);
     vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
       49 + (effectData[x].y_fixed >> FBITS), 
       (unsigned)Sprite / 64, effectData[x].color);
@@ -81,6 +85,12 @@ void explodeLineSpr(char line) {
       50 + (effectData[x].y_fixed >> FBITS), 
       (unsigned)Sprite / 64, effectData[x].color);
   }
+
+  // Assign vertical velocities: first 5 in permutation go up (-35 to -55), last 5 go down (+35 to +55)
+  for (char i = 0; i < 5; i++)
+    effectData[perm[i]].dy = -(35 + rand() % 21);
+  for (char i = 5; i < 10; i++)
+    effectData[perm[i]].dy = 35 + rand() % 21;
 
   // print to screen - will cause flickering on the same line
   vspr_sort();
