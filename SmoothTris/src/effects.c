@@ -20,7 +20,8 @@ void fadeLine(char line) {
   bool stop = false;
   for(char x = 0; x < 5; x++) {
     for(char e = 0; e < 5; e++) {
-      for(char w = 0; w < EFFECT_DELAY; w++) {
+      char delay = ((e & 1) == 0) ? EFFECT_DELAY_BASE : (EFFECT_DELAY_BASE - EFFECT_DELAY_SKIP); // alternate: 2, 1, 2, 1, 2 frames
+      for(char w = 0; w < delay; w++) {
         wait_vblank();
       }
       
