@@ -10,6 +10,7 @@
 #include <string.h>
 #include <math.h>
 #include "gamevars.h"
+#include "gameirq.h"
 #include "effects.h"
 #include "srs.h"
 #include "shadow.h"
@@ -879,6 +880,7 @@ int main(void)
   TheGame.tileCount = 0;
   TheGame.cheat = 0;
   TheGame.drop = 0;
+  gameirq_init();
   game_state(GS_READY);
   
   for(;;)		
