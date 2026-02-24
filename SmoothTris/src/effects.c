@@ -317,9 +317,9 @@ void spiralLineSpr(char line) {
       49 + (effectData[x].y_fixed >> FBITS),
       (unsigned)Sprite / 64, effectData[x].color);
   }
-
   vspr_sort();
   vspr_update();
+  VIC_REG->spr_enable = 0xFF;
 
   for(;;) {
     char active_particles = 0;
@@ -352,7 +352,7 @@ void spiralLineSpr(char line) {
       break;
     }
   }
-  putTile();
+  VIC_REG->spr_enable = 0x00;
 }
 
 // Smooth pixel-by-pixel scroll: shifts the bowl content above `line` down
