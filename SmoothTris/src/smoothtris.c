@@ -631,6 +631,10 @@ void moveToNewPos(void) {
     // give a small reward to the score for putting a tile on screen
     //TheGame.inc_score = TheGame.inc_score + (int) (sqrt(20 - TheGame.tile_line) * sqrt(TheGame.level + 1));
 
+    
+    // disable sprites
+    VIC_REG->spr_enable = 0x00;
+
     // check for completed lines
     char removed = checklines();
     TheGame.lines += removed;
@@ -642,11 +646,7 @@ void moveToNewPos(void) {
       droppedCount = 1;
       softDrop = true;
     }
-    
     if(TheGame.state == GS_EXIT || TheGame.state == GS_PANIC || TheGame.state == GS_WON) return;
-    
-    // disable sprites
-    VIC_REG->spr_enable = 0x00;
 
     // calculate score
     if(TheGame.number_of_blocks == 0) {
@@ -814,6 +814,7 @@ int main(void)
   mmap_set(MMAP_CHAR_ROM);
   memcpy(Charset, Charset + 2048, 2048);
   memcpy(Charset + 40 * 8, EffectChars, sizeof(EffectChars));
+  generate_scroll_chars();
   mmap_set(MMAP_RAM);
   memcpy(Sprite, SpriteImage, 64);
   mmap_set(MMAP_NO_BASIC);

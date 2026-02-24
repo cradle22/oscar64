@@ -6,6 +6,7 @@
 
 void cascadeLineSpr(char line);
 void spiralLineSpr(char line);
+void scroll_line_down(char line);
 void removeLine(unsigned char line);
 
 #pragma compile("effects.c")
