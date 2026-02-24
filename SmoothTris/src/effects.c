@@ -100,6 +100,7 @@ void explodeLineSpr(char line) {
   // print to screen - will cause flickering on the same line
   vspr_sort();
 	vspr_update();
+  VIC_REG->spr_enable = 0xFF;
   
   for(;;) {
     char active_particles = 0;
@@ -142,7 +143,7 @@ void explodeLineSpr(char line) {
       break;
     }
   }
-  putTile();
+  VIC_REG->spr_enable = 0x00;
 }
 
 void explodeLine(char line) {
@@ -257,6 +258,7 @@ void cascadeLineSpr(char line) {
 
   vspr_sort();
   vspr_update();
+  VIC_REG->spr_enable = 0xFF;
 
   for(;;) {
     char active_particles = 0;
@@ -289,7 +291,7 @@ void cascadeLineSpr(char line) {
       break;
     }
   }
-  putTile();
+  VIC_REG->spr_enable = 0x00;
 }
 
 void spiralLineSpr(char line) {
@@ -417,9 +419,7 @@ void removeLine(char line) {
   char randEffect = rand() % 4;
   switch(randEffect) {
     case 0:
-      VIC_REG->spr_enable = 0x00;
       fadeLine(line);
-      VIC_REG->spr_enable = 0xFF;
       break;
     case 1:
       #if EXPLODELINEALGO == 0
