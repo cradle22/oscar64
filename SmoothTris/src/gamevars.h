@@ -16,6 +16,8 @@
 #define BLOCKSIZE 8
 #define SIDEFRAMES 20
 #define DROPFRAMES 10
+#define EFFECT_DELAY_BASE 2
+#define EFFECT_DELAY_SKIP 1
 #define F_WIDTH 10
 #define F_HEIGHT 20
 #define SIDE_LATE_PIXELS 3   // how many pixels at the end of the 8px fall
