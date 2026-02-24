@@ -64,7 +64,9 @@ void explodeLineSpr(char line) {
   for (char i = 0; i < 10; i++) perm[i] = i;
   for (char i = 9; i > 0; i--) {
     char j = rand() % (i + 1);
-    char tmp = perm[i]; perm[i] = perm[j]; perm[j] = tmp;
+    char tmp = perm[i]; 
+    perm[i] = perm[j]; 
+    perm[j] = tmp;
   }
 
   // Deterministic horizontal fan spread: 8 fixed positions (spaced 12 apart) + 2 alternating
@@ -82,9 +84,11 @@ void explodeLineSpr(char line) {
     vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
       49 + (effectData[x].y_fixed >> FBITS), 
       (unsigned)Sprite / 64, effectData[x].color);
+    /*
     vspr_set(x + 1, 24 + (effectData[x].x_fixed >> FBITS),
       50 + (effectData[x].y_fixed >> FBITS), 
       (unsigned)Sprite / 64, effectData[x].color);
+    */
   }
 
   // Assign vertical velocities: first 5 in permutation go up (-35 to -55), last 5 go down (+35 to +55)
@@ -123,13 +127,13 @@ void explodeLineSpr(char line) {
         int ptr = (cy * 40) + cx;
         effectData[x].last_ptr = ptr;
         vspr_move(x, 23 + cx, 49 + cy);
-        vspr_move(x + 1, 24 + cx, 50 + cy);
+        //vspr_move(x + 1, 24 + cx, 50 + cy);
         vspr_sort();
 	      vspr_update();
         active_particles++;
       } else {
         vspr_hide(x);
-        vspr_hide(x + 1);
+        //vspr_hide(x + 1);
       }
     }
     if(active_particles == 0) break;
@@ -158,7 +162,7 @@ void explodeLine(char line) {
     effectData[x].x_fixed = (startX + x) << FBITS;
     effectData[x].y_fixed = (startY + line) << FBITS;
     effectData[x].oldChar = 0;
-    effectData[x].last_ptr = 40 * (startY + line) + startX + x;  // Change: use -1 as "invalid" marker
+    effectData[x].last_ptr = 40 * (startY + line) + startX + x;
     int magX = 8 + (rand() % 17);
     effectData[x].dx = (rand() & 1) ? magX : -magX;
     int magY = 8 + (rand() % 17);
@@ -167,7 +171,6 @@ void explodeLine(char line) {
     } else {
       effectData[x].dy = (rand() & 1) ? magY : -magY;
     }
-    //Screen[40 * (startY + line) + startX + x] = 0x20;
     screen_backup[40 * (startY + line) + startX + x] = 0x20;
   }
   
@@ -217,9 +220,9 @@ void explodeLine(char line) {
     }
   }
   
-  // Final cleanup
+  // Final cleanup (restore the screen for the last shown particles)
   for(char x = 0; x < 10; x++) {
-    if(effectData[x].last_ptr >= 0) {  // Change: check >= 0
+    if(effectData[x].last_ptr >= 0) {
       Screen[effectData[x].last_ptr] = effectData[x].oldChar;
       Color[effectData[x].last_ptr] = effectData[x].oldColor;
     }
@@ -238,9 +241,13 @@ void removeLine(char line) {
       VIC_REG->spr_enable = 0xFF;
       break;
     case 1:
-      //VIC_REG->spr_enable = 0x00;
-      explodeLineSpr(line);
-      //VIC_REG->spr_enable = 0xFF;
+      #if EXPLODELINEALGO == 0
+        VIC_REG->spr_enable = 0x00;
+        explodeLine(line);
+        VIC_REG->spr_enable = 0xFF;
+      #else
+        explodeLineSpr(line);
+      #endif
       break;
   }
   if(TheGame.state != GS_EXIT && TheGame.state != GS_PANIC) {

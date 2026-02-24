@@ -25,6 +25,7 @@
 #define PREVIEWX 30
 #define PREVIEWY 3
 #define BOWLCHARACTER 160
+#define EXPLODELINEALGO 1
 
 //typedef unsigned char byte;
 
