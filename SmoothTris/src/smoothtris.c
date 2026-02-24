@@ -202,7 +202,9 @@ void statusUpdate2(void) {
 void showHideNextTile(bool hide) {
 
   // clear the preview character area
+  #pragma unroll(full)
   for(char y = 0; y < 2; y++) {
+    #pragma unroll(full)
     for(char x = 0; x < 4; x++) {
       Screen[(40 * (PREVIEWY)) + (40 * y) + (PREVIEWX + 1 + x)] = 0x20;
     }
@@ -224,6 +226,7 @@ void showHideNextTile(bool hide) {
 }
 
 void putTile(void) {
+  /*
   spr_set(0, true, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[0] * 8) + (TheGame.tile_row_graph >> FBITS), 
     49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[0] * 8) + (TheGame.tile_line_graph >> FBITS), 
     (unsigned)Sprite / 64, TheGame.currentTile.color, false, false, false);
@@ -248,9 +251,37 @@ void putTile(void) {
   spr_set(7, true, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
     50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS), 
     (unsigned)Sprite / 64, TheGame.currentTile.color, false, false, false);
+  */
+  vspr_set(0, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[0] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[0] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(1, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[1] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[1] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(2, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[2] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[2] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(3, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(4, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[0] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[0] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(5, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[1] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[1] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(6, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[2] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[2] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color);
+  vspr_set(7, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS), 
+    (unsigned)Sprite / 64, TheGame.currentTile.color); 
+  vspr_sort();
+	vspr_update();
 }
 
 void moveTileToPos(bool setColor) {
+  /*
   if(setColor) {
     spr_color(0, TheGame.currentTile.color);
     spr_color(1, TheGame.currentTile.color);
@@ -277,6 +308,35 @@ void moveTileToPos(bool setColor) {
     50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[2] * 8) + (TheGame.tile_line_graph >> FBITS));
   spr_move(7, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
     50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS));
+  */
+ if(setColor) {
+    vspr_color(0, TheGame.currentTile.color);
+    vspr_color(1, TheGame.currentTile.color);
+    vspr_color(2, TheGame.currentTile.color);
+    vspr_color(3, TheGame.currentTile.color);
+    vspr_color(4, TheGame.currentTile.color);
+    vspr_color(5, TheGame.currentTile.color);
+    vspr_color(6, TheGame.currentTile.color);
+    vspr_color(7, TheGame.currentTile.color);
+  }
+  vspr_move(0, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[0] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[0] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(1, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[1] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[1] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(2, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[2] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[2] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(3, 23 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    49 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(4, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[0] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[0] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(5, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[1] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[1] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(6, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[2] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[2] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_move(7, 24 + BOWLSTARTX + (TheGame.currentTile.x_spr_offsets[3] * 8) + (TheGame.tile_row_graph >> FBITS), 
+    50 + BOWLSTARTY + (TheGame.currentTile.y_spr_offsets[3] * 8) + (TheGame.tile_line_graph >> FBITS));
+  vspr_sort();
+	vspr_update();
 }
 
 bool rotate(bool left) {
@@ -390,7 +450,9 @@ void newtile(void) {
 void redrawGrid(void) {
   char startX = BOWLSTARTX / BLOCKSIZE;
   char startY = BOWLSTARTY / BLOCKSIZE;
+  #pragma unroll(full)
   for(char y = 0; y < 20; y++) {
+    #pragma unroll(full)
     for(char x = 0; x < 10; x++) {
       int screenPos = 40 * (startY + y) + startX + x;
       if(TheGame.grid[x][y] > 0) {
@@ -425,10 +487,13 @@ char checklines(void) {
   char count = 0;
   char comp_lines[20];
   char myLines = 0;
+  #pragma unroll(full)
 	for(char y = 0; y < 20; y++) {
 		count = 0;
-		for(char x = 0; x < 10; x++)
+    #pragma unroll(full)
+		for(char x = 0; x < 10; x++) {
 			if(TheGame.grid[x][y] != 0) count++;
+    }
 		if(count == 10) {
 			comp_lines[myLines] = y;
 			myLines++;
@@ -701,7 +766,7 @@ void game_state(GameState state) {
       TheGame.state = GS_PLAYING;
       break;
     case GS_EFFECT:
-      VIC_REG->spr_enable = 0x00;
+      //VIC_REG->spr_enable = 0x00;
       hideShadow();
       break;
     case GS_PAUSED:
@@ -715,7 +780,7 @@ void game_state(GameState state) {
         showHideNextTile(false);
         showShadow();
       } else if(oldState == GS_EFFECT) {
-        VIC_REG->spr_enable = 0xFF;
+        //VIC_REG->spr_enable = 0xFF;
         showShadow();
       }
       break;
@@ -753,7 +818,8 @@ int main(void)
   memcpy(Sprite, SpriteImage, 64);
   mmap_set(MMAP_NO_BASIC);
   vic_setmode(VICM_TEXT, Screen, Charset);
-  spr_init(Screen);
+  //spr_init(Screen);
+  vspr_init(Screen);
 
   
   vic.color_border = VCOL_BLUE;

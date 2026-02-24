@@ -6,8 +6,6 @@
 //byte* const Color      = (byte*)0xd800;
 //byte* const Sprite     = (byte*)0x0380;
 //byte* const Sprite     = (byte*)0xd800;
-byte* const TextFont   = (byte*)0xe800;
-byte* const CharSwitch = (byte*)0xd018;
 //byte* const Charset    = (byte *)0xd000;
 
 
@@ -91,7 +89,7 @@ const struct tile		tiles[7] =
 };
 
 //                          01234567890123456789012345678901234567890
-const char StatusText[] = s" Score: 000000  Lines: 000000  Level: 00";
+const char StatusText[] = s" SCORE: 000000  LINES: 000000  LEVEL: 00";
 //const char StatusText[] = " SCORE: 000000  LINES: 000000   LEVEL: 0 ";
 
 const unsigned char level_y_inc[10] = {4, 6, 9, 12, 15, 18, 21, 24, 27, 30};
@@ -144,3 +142,10 @@ const byte SpriteImage[64] = {
   0b00000000, 0b00000000, 0b00000000,
   0b00000000, 0b00000000, 0b00000000
 };
+
+const byte SpriteImageC[64] = {
+  255,0,0,253,0,0,233,0,0,233,0,0,233,0,0,233
+  0,0,213,0,0,85,0,0,0,0,0,0,0,0,0,0
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,135
+}

@@ -52,6 +52,84 @@ typedef struct {
   int last_ptr;
 } ex_data;
 
+void explodeLineSpr(char line) {
+  __assume(line < 20);
+  int startY = BOWLSTARTY / BLOCKSIZE;
+  int startX = BOWLSTARTX / BLOCKSIZE;
+  ex_data effectData[10];
+
+  // calculate sprite starting positions and velocity
+  for(int x = 0; x < 10; x++) {
+    effectData[x].first = true;
+    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
+    effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
+    effectData[x].oldChar = 0;
+    effectData[x].last_ptr = 40 * (startY + line) + startX + x;
+    int magX = 22 + (rand() % 45);
+    effectData[x].dx = (rand() & 1) ? magX : -magX;
+    int magY = 22 + (rand() % 45);
+    if(startY + line > 14) {
+      effectData[x].dy = -magY;
+    } else {
+      effectData[x].dy = (rand() & 1) ? magY : -magY;
+    }
+    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
+      49 + (effectData[x].y_fixed >> FBITS), 
+      (unsigned)Sprite / 64, effectData[x].color);
+    vspr_set(x + 1, 24 + (effectData[x].x_fixed >> FBITS),
+      50 + (effectData[x].y_fixed >> FBITS), 
+      (unsigned)Sprite / 64, effectData[x].color);
+  }
+
+  // print to screen - will cause flickering on the same line
+  vspr_sort();
+	vspr_update();
+  
+  for(;;) {
+    char active_particles = 0;
+    for(char x = 0; x < 10; x++) {
+      if(! effectData[x].first && effectData[x].last_ptr >= 0) { 
+        effectData[x].last_ptr = -1;
+      }
+
+      // clear the single tetris block from the grid on first move
+      if(effectData[x].first) {
+        effectData[x].first = false;
+        Screen[effectData[x].last_ptr] = 0x20;
+      }
+
+      // move particles
+      effectData[x].x_fixed += effectData[x].dx;
+      effectData[x].y_fixed += effectData[x].dy;
+
+      // Calculate integer coordinates
+      int cx = effectData[x].x_fixed >> FBITS;
+      int cy = effectData[x].y_fixed >> FBITS;
+
+      // Draw ONLY if in bounds
+      if(cx >= 0 && cy >= -7 && cx < 351 && cy < 257) {
+        int ptr = (cy * 40) + cx;
+        effectData[x].last_ptr = ptr;
+        vspr_move(x, 23 + cx, 49 + cy);
+        vspr_move(x + 1, 24 + cx, 50 + cy);
+        vspr_sort();
+	      vspr_update();
+        active_particles++;
+      } else {
+        vspr_hide(x);
+        vspr_hide(x + 1);
+      }
+    }
+    if(active_particles == 0) break;
+    game_keyboard();
+    if(TheGame.state != GS_EFFECT) {
+      break;
+    }
+  }
+  putTile();
+}
+
 void explodeLine(char line) {
   __assume(line < 20);
   int startY = BOWLSTARTY / BLOCKSIZE;
@@ -61,6 +139,8 @@ void explodeLine(char line) {
   ex_data effectData[10];
   memcpy(screen_backup, Screen, 1000);
   memcpy(color_backup, Color, 1000);
+
+  // set initial settings for each particle and backup the line's characters/colors, then clear the line
   for(int x = 0; x < 10; x++) {
     effectData[x].first = true;
     effectData[x].color = Color[40 * (startY + line) + startX + x];
@@ -83,11 +163,15 @@ void explodeLine(char line) {
   for(;;) {
     char active_particles = 0;
     for(char x = 0; x < 10; x++) {
+
+      // restore previous character if it exists
       if(! effectData[x].first && effectData[x].last_ptr >= 0) { 
         Screen[effectData[x].last_ptr] = effectData[x].oldChar;
         Color[effectData[x].last_ptr] = effectData[x].oldColor;
         effectData[x].last_ptr = -1;
       }
+
+      // clear the single tetris block from the grid on first move
       if(effectData[x].first) {
         effectData[x].first = false;
         Screen[effectData[x].last_ptr] = 0x20;
@@ -138,10 +222,14 @@ void removeLine(char line) {
   char randEffect = rand() % 2;
   switch(randEffect) {
     case 0:
+      VIC_REG->spr_enable = 0x00;
       fadeLine(line);
+      VIC_REG->spr_enable = 0xFF;
       break;
     case 1:
-      explodeLine(line);
+      //VIC_REG->spr_enable = 0x00;
+      explodeLineSpr(line);
+      //VIC_REG->spr_enable = 0xFF;
       break;
   }
   if(TheGame.state != GS_EXIT && TheGame.state != GS_PANIC) {

@@ -30,8 +30,6 @@
 extern byte* const Screen;
 extern byte* const Color;
 extern byte* const Sprite;
-extern byte* const TextFont;
-extern byte* const CharSwitch;
 extern byte* const Charset;
 
 static unsigned char singleBlockCharacter = 160;
@@ -111,6 +109,7 @@ extern struct Game TheGame;
 void game_state(GameState state);
 void game_keyboard(void);
 void redrawGrid(void);
+void putTile(void);
 
 #pragma compile("gamevars.c")
 
