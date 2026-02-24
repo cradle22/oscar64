@@ -229,11 +229,135 @@ void explodeLine(char line) {
   }
 }
 
+void cascadeLineSpr(char line) {
+  __assume(line < 20);
+  int startY = BOWLSTARTY / BLOCKSIZE;
+  int startX = BOWLSTARTX / BLOCKSIZE;
+  ex_data effectData[10];
+
+  for(int x = 0; x < 10; x++) {
+    effectData[x].first = true;
+    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
+    effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
+    effectData[x].oldChar = 0;
+    effectData[x].last_ptr = 40 * (startY + line) + startX + x;
+    effectData[x].dx = 0;
+    // outer tiles fall fastest, mid-outer medium, center slowest
+    if(x == 0 || x == 1 || x == 8 || x == 9)
+      effectData[x].dy = 60 + rand() % 21;
+    else if(x == 2 || x == 3 || x == 6 || x == 7)
+      effectData[x].dy = 40 + rand() % 16;
+    else
+      effectData[x].dy = 20 + rand() % 11;
+    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
+      49 + (effectData[x].y_fixed >> FBITS),
+      (unsigned)Sprite / 64, effectData[x].color);
+  }
+
+  vspr_sort();
+  vspr_update();
+
+  for(;;) {
+    char active_particles = 0;
+    for(char x = 0; x < 10; x++) {
+      if(! effectData[x].first && effectData[x].last_ptr >= 0) {
+        effectData[x].last_ptr = -1;
+      }
+      if(effectData[x].first) {
+        effectData[x].first = false;
+        Screen[effectData[x].last_ptr] = 0x20;
+      }
+      effectData[x].x_fixed += effectData[x].dx;
+      effectData[x].y_fixed += effectData[x].dy;
+      int cx = effectData[x].x_fixed >> FBITS;
+      int cy = effectData[x].y_fixed >> FBITS;
+      if(cx >= 0 && cy >= -7 && cx < 351 && cy < 257) {
+        int ptr = (cy * 40) + cx;
+        effectData[x].last_ptr = ptr;
+        vspr_move(x, 23 + cx, 49 + cy);
+        vspr_sort();
+        vspr_update();
+        active_particles++;
+      } else {
+        vspr_hide(x);
+      }
+    }
+    if(active_particles == 0) break;
+    game_keyboard();
+    if(TheGame.state != GS_EFFECT) {
+      break;
+    }
+  }
+  putTile();
+}
+
+void spiralLineSpr(char line) {
+  __assume(line < 20);
+  int startY = BOWLSTARTY / BLOCKSIZE;
+  int startX = BOWLSTARTX / BLOCKSIZE;
+  ex_data effectData[10];
+
+  // Pre-calculated velocity vectors for 10 evenly-spaced angles on a circle (radius ~50)
+  static const int spiral_dx[10] = { 50,  40,  15, -15, -40, -50, -40, -15,  15,  40};
+  static const int spiral_dy[10] = {  0,  29,  47,  47,  29,   0, -29, -47, -47, -29};
+
+  for(int x = 0; x < 10; x++) {
+    effectData[x].first = true;
+    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
+    effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
+    effectData[x].oldChar = 0;
+    effectData[x].last_ptr = 40 * (startY + line) + startX + x;
+    effectData[x].dx = spiral_dx[x] + (rand() % 11) - 5;
+    effectData[x].dy = spiral_dy[x] + (rand() % 11) - 5;
+    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
+      49 + (effectData[x].y_fixed >> FBITS),
+      (unsigned)Sprite / 64, effectData[x].color);
+  }
+
+  vspr_sort();
+  vspr_update();
+
+  for(;;) {
+    char active_particles = 0;
+    for(char x = 0; x < 10; x++) {
+      if(! effectData[x].first && effectData[x].last_ptr >= 0) {
+        effectData[x].last_ptr = -1;
+      }
+      if(effectData[x].first) {
+        effectData[x].first = false;
+        Screen[effectData[x].last_ptr] = 0x20;
+      }
+      effectData[x].x_fixed += effectData[x].dx;
+      effectData[x].y_fixed += effectData[x].dy;
+      int cx = effectData[x].x_fixed >> FBITS;
+      int cy = effectData[x].y_fixed >> FBITS;
+      if(cx >= 0 && cy >= -7 && cx < 351 && cy < 257) {
+        int ptr = (cy * 40) + cx;
+        effectData[x].last_ptr = ptr;
+        vspr_move(x, 23 + cx, 49 + cy);
+        vspr_sort();
+        vspr_update();
+        active_particles++;
+      } else {
+        vspr_hide(x);
+      }
+    }
+    if(active_particles == 0) break;
+    game_keyboard();
+    if(TheGame.state != GS_EFFECT) {
+      break;
+    }
+  }
+  putTile();
+}
+
 void removeLine(char line) {
   __assume(line < 20);
   GameState oldState = TheGame.state;
   game_state(GS_EFFECT);
-  char randEffect = rand() % 2;
+  char randEffect = rand() % 4;
   switch(randEffect) {
     case 0:
       VIC_REG->spr_enable = 0x00;
@@ -248,6 +372,12 @@ void removeLine(char line) {
       #else
         explodeLineSpr(line);
       #endif
+      break;
+    case 2:
+      cascadeLineSpr(line);
+      break;
+    case 3:
+      spiralLineSpr(line);
       break;
   }
   if(TheGame.state != GS_EXIT && TheGame.state != GS_PANIC) {
