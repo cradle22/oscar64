@@ -73,7 +73,7 @@ void explodeLineSpr(char line) {
   static const int dx_fan[8] = {-55, -43, -31, -19, 19, 31, 43, 55};
 
   // calculate sprite starting positions and velocity
-  for(int x = 0; x < 10; x++) {
+  for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
     effectData[x].color = Color[40 * (startY + line) + startX + x];
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
