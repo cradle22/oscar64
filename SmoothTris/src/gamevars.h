@@ -113,6 +113,7 @@ void game_state(GameState state);
 void game_keyboard(void);
 void redrawGrid(void);
 void putTile(void);
+void generate_scroll_chars(void);
 
 #pragma compile("gamevars.c")
 

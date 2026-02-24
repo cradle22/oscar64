@@ -149,3 +149,31 @@ const byte SpriteImageC[64] = {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,135
 };
+
+// Scroll character layout in charset (indices 220-235):
+//   220       : solid block (all 8 rows = 0xFF)
+//   221-227   : top-heavy, offset N=1..7 (top N rows 0xFF, rest 0x00)
+//   228-234   : bottom-heavy, offset N=1..7 (top N rows 0x00, rest 0xFF)
+//   235       : empty block (all 8 rows = 0x00)
+// Must be called while MMAP_CHAR_ROM is active (caller's responsibility).
+void generate_scroll_chars(void) {
+  char i, n;
+
+  // char 220: solid
+  for(i = 0; i < 8; i++) Charset[220 * 8 + i] = 0xFF;
+
+  // chars 221-227: top-heavy for offsets 1-7
+  for(n = 1; n <= 7; n++) {
+    for(i = 0; i < 8; i++)
+      Charset[(220 + n) * 8 + i] = (i < n) ? 0xFF : 0x00;
+  }
+
+  // chars 228-234: bottom-heavy for offsets 1-7
+  for(n = 1; n <= 7; n++) {
+    for(i = 0; i < 8; i++)
+      Charset[(227 + n) * 8 + i] = (i < n) ? 0x00 : 0xFF;
+  }
+
+  // char 235: empty
+  for(i = 0; i < 8; i++) Charset[235 * 8 + i] = 0x00;
+}

@@ -814,6 +814,7 @@ int main(void)
   mmap_set(MMAP_CHAR_ROM);
   memcpy(Charset, Charset + 2048, 2048);
   memcpy(Charset + 40 * 8, EffectChars, sizeof(EffectChars));
+  generate_scroll_chars();
   mmap_set(MMAP_RAM);
   memcpy(Sprite, SpriteImage, 64);
   mmap_set(MMAP_NO_BASIC);
