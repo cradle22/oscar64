@@ -5,92 +5,37 @@
 RIRQCode	rirqlow, rirqup, rirqmenu;
 
 
-__interrupt void irq_lower(void)
-{
-//	vic.color_border = VCOL_GREEN;
-  /*
-	vspr_update();
-	if (irqphase == IRQP_UPDATE_SPRITE || irqphase == IRQP_INTRO)
-	{
-//		vic.color_border = VCOL_CYAN;
-		rirq_sort(true);
-	}
-//	vic.color_border = VCOL_BLACK;
+static bool even = false;
 
-	if (irqphase == IRQP_WINDOW)
-		return;
-	
-	if (irqphase == IRQP_INTRO)
-		;
-	else if (irqphase == IRQP_USER_INPUT)
-	{
-		irqphase = IRQP_MOVE_DIGGER;
-		irqcount++;
-	}
-	else
-		irqphase++;
-
-	vic.spr_priority = 0x00;
-  */
- Screen[160] = 'L';
- Color[160] = VCOL_BLUE;
+__interrupt void irq_lower(void) {
+  //Screen[160] = 'L';
+  //Color[160] = VCOL_BLUE;
 }
 
-__interrupt void irq_upper(void)
-{
-  /*
-//	vic.color_border = VCOL_YELLOW;
-	music_play();
-//	vic.color_border = VCOL_PURPLE;
-	
-	switch(irqphase)
-	{
-	case IRQP_MOVE_DIGGER:
-		diggers_move();
-		enemies_move();
-		key_scan();
-		break;
-	case IRQP_UPDATE_SPRITE:
-//		vic.color_border = VCOL_YELLOW;
-		{
-			char si = diggers_sprites(0, mapx, mapy);
-			si = enemies_sprites(si, mapx, mapy);
+__interrupt void irq_upper(void) {
+  //music_play();
+  //Screen[160] = 'U';
+  //Color[160] = VCOL_RED;
+	/*
+	if(even) {
+		Screen[160] = 134;
+		Color[160] = VCOL_RED;
 
-			while (si < 16)
-			{
-				vspr_move(si, 0, 255);
-				si++;
-			}
-		}
-
-//		vic.color_border = VCOL_CYAN;
-		vspr_sort();
-		key_scan();
-		break;
-	case IRQP_USER_INPUT:
-		key_scan();
-		user_interaction();
-		break;
-	case IRQP_WINDOW:
-		for(char i=0; i<16; i++)
-			vspr_move(i, 0, 255);
-		vspr_sort();
-		break;
-	case IRQP_INTRO:
-		break;
+		even = false;
+	} else {
+		Screen[160] = 135;
+		Color[160] = VCOL_YELLOW;
+		even = true;
 	}
-
-	sidfx_loop_2();
-  */
-	
-//	vic.color_border = VCOL_BLACK;
-  Screen[160] = 'U';
-  Color[160] = VCOL_RED;
+	*/
 }
 
 
 void gameirq_init(void)
 {
+  Screen[160] = 134;
+	Color[160] = VCOL_RED;
+  rirq_init_kernal();
 
 	rirq_build(&rirqlow, 1);
 	rirq_call(&rirqlow, 0, irq_lower);

@@ -15,7 +15,7 @@ void fadeLine(char line) {
   __assume(line < 20);
   char startY = BOWLSTARTY / BLOCKSIZE;
   char startX = BOWLSTARTX / BLOCKSIZE;
-  char ec[5] = {singleBlockCharacter, 40, 41, 42, 32 };
+  char ec[5] = {singleBlockCharacter, CHAR_EFFECT_FADE1, CHAR_EFFECT_FADE2, CHAR_EFFECT_FADE3, CHAR_EMPTY };
 
   bool stop = false;
   for(char x = 0; x < 5; x++) {
@@ -75,15 +75,21 @@ void explodeLineSpr(char line) {
   // calculate sprite starting positions and velocity
   for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
-    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].color = tiles[TheGame.grid[x][line]].color;
+    //Color[40 * (startY + line) + startX + x];
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
     effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
     effectData[x].oldChar = 0;
     effectData[x].last_ptr = 40 * (startY + line) + startX + x;
     effectData[x].dx = (x < 8) ? dx_fan[x] : ((rand() & 1) ? 8 : -8);
-    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
-      49 + (effectData[x].y_fixed >> FBITS), 
-      (unsigned)Sprite / 64, effectData[x].color);
+    char spr_x = 23 + (effectData[x].x_fixed >> FBITS);
+    char spr_y = 49 + (effectData[x].y_fixed >> FBITS);
+    if(false && effectData[x].color == VCOL_ORANGE) {
+      vspr_set(x, spr_x, spr_y, (char)Sprite / 64, effectData[x].color);
+    } else {
+      vspr_set(x, spr_x, spr_y, (char)Sprite / 64, effectData[x].color);
+    }
+    
     /*
     vspr_set(x + 1, 24 + (effectData[x].x_fixed >> FBITS),
       50 + (effectData[x].y_fixed >> FBITS), 
@@ -112,7 +118,7 @@ void explodeLineSpr(char line) {
       // clear the single tetris block from the grid on first move
       if(effectData[x].first) {
         effectData[x].first = false;
-        Screen[effectData[x].last_ptr] = 0x20;
+        Screen[effectData[x].last_ptr] = CHAR_EMPTY;
       }
 
       // move particles
@@ -159,7 +165,8 @@ void explodeLine(char line) {
   // set initial settings for each particle and backup the line's characters/colors, then clear the line
   for(int x = 0; x < 10; x++) {
     effectData[x].first = true;
-    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    //effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].color = tiles[TheGame.grid[x][line]].color;
     effectData[x].x_fixed = (startX + x) << FBITS;
     effectData[x].y_fixed = (startY + line) << FBITS;
     effectData[x].oldChar = 0;
@@ -172,7 +179,7 @@ void explodeLine(char line) {
     } else {
       effectData[x].dy = (rand() & 1) ? magY : -magY;
     }
-    screen_backup[40 * (startY + line) + startX + x] = 0x20;
+    screen_backup[40 * (startY + line) + startX + x] = CHAR_EMPTY;
   }
   
   for(;;) {
@@ -189,7 +196,7 @@ void explodeLine(char line) {
       // clear the single tetris block from the grid on first move
       if(effectData[x].first) {
         effectData[x].first = false;
-        Screen[effectData[x].last_ptr] = 0x20;
+        Screen[effectData[x].last_ptr] = CHAR_EMPTY;
         //redrawGrid();
       }
       // move particles
@@ -238,7 +245,8 @@ void cascadeLineSpr(char line) {
 
   for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
-    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    //effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].color = tiles[TheGame.grid[x][line]].color;
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
     effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
     effectData[x].oldChar = 0;
@@ -251,9 +259,9 @@ void cascadeLineSpr(char line) {
       effectData[x].dy = 40 + rand() % 16;
     else
       effectData[x].dy = 20 + rand() % 11;
-    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
-      49 + (effectData[x].y_fixed >> FBITS),
-      (unsigned)Sprite / 64, effectData[x].color);
+    char spr_x = 23 + (effectData[x].x_fixed >> FBITS);
+    char spr_y = 49 + (effectData[x].y_fixed >> FBITS);
+    vspr_set(x, 23 + spr_x, spr_y, (char)Sprite / 64, effectData[x].color);
   }
 
   vspr_sort();
@@ -268,7 +276,7 @@ void cascadeLineSpr(char line) {
       }
       if(effectData[x].first) {
         effectData[x].first = false;
-        Screen[effectData[x].last_ptr] = 0x20;
+        Screen[effectData[x].last_ptr] = CHAR_EMPTY;
       }
       effectData[x].x_fixed += effectData[x].dx;
       effectData[x].y_fixed += effectData[x].dy;
@@ -306,16 +314,17 @@ void spiralLineSpr(char line) {
 
   for(char x = 0; x < 10; x++) {
     effectData[x].first = true;
-    effectData[x].color = Color[40 * (startY + line) + startX + x];
+    //effectData[x].color = Color[40 * (startY + line) + startX + x];
+    effectData[x].color = tiles[TheGame.grid[x][line]].color;
     effectData[x].x_fixed = (BOWLSTARTX + (x * BLOCKSIZE)) << FBITS;
     effectData[x].y_fixed = (BOWLSTARTY + (line * BLOCKSIZE)) << FBITS;
     effectData[x].oldChar = 0;
     effectData[x].last_ptr = 40 * (startY + line) + startX + x;
     effectData[x].dx = spiral_dx[x] + (rand() % 11) - 5;
     effectData[x].dy = spiral_dy[x] + (rand() % 11) - 5;
-    vspr_set(x, 23 + (effectData[x].x_fixed >> FBITS),
-      49 + (effectData[x].y_fixed >> FBITS),
-      (unsigned)Sprite / 64, effectData[x].color);
+    char spr_x = 23 + (effectData[x].x_fixed >> FBITS);
+    char spr_y = 49 + (effectData[x].y_fixed >> FBITS);
+    vspr_set(x, spr_x, spr_y, (char)Sprite / 64, effectData[x].color);
   }
   vspr_sort();
   vspr_update();
@@ -329,7 +338,7 @@ void spiralLineSpr(char line) {
       }
       if(effectData[x].first) {
         effectData[x].first = false;
-        Screen[effectData[x].last_ptr] = 0x20;
+        Screen[effectData[x].last_ptr] = CHAR_EMPTY;
       }
       effectData[x].x_fixed += effectData[x].dx;
       effectData[x].y_fixed += effectData[x].dy;
@@ -407,7 +416,7 @@ void scroll_line_down(char line) {
   // Clear the top row of the bowl (now visually vacated)
   for(char x = 0; x < 10; x++) {
     int screenPos = 40 * startY + startX + x;
-    Screen[screenPos] = 0x20;
+    Screen[screenPos] = CHAR_EMPTY;
     Color[screenPos]  = VCOL_LT_BLUE;
   }
 }
@@ -442,5 +451,25 @@ void removeLine(char line) {
   }
   if(TheGame.state != GS_EXIT && TheGame.state != GS_PANIC) {
     game_state(oldState);
+  }
+}
+
+void addOrange(char* pos) {
+  if (active_flicker_count < MAX_FLICKERS) {
+    flicker_positions[active_flicker_count] = pos;
+    active_flicker_count++;
+  }
+}
+
+void removeOrange(char* pos) {
+  for (char i = 0; i < active_flicker_count; i++) {
+    if (flicker_positions[i] == pos) {
+      if(active_flicker_count > 1 && i != active_flicker_count) {
+        // Replace this one with the last one in the list
+        flicker_positions[i] = flicker_positions[active_flicker_count - 1];
+      }
+      active_flicker_count--;
+      return;
+    }
   }
 }

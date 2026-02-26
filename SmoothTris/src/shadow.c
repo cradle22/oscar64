@@ -9,7 +9,7 @@ Vector2 shadowData[6] = { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, 
 void removeShadow() {
   for (char i = 0; i < 6; i++) {
     if (shadowData[i].x >= 0 && shadowData[i].y >= 0) {
-      Screen[40 * shadowData[i].y + shadowData[i].x] = 0x20;
+      Screen[40 * shadowData[i].y + shadowData[i].x] = CHAR_EMPTY;
       shadowData[i].x = -1;
       shadowData[i].y = -1;
     }
@@ -19,7 +19,7 @@ void removeShadow() {
 void hideShadow() {
   for (char i = 0; i < 6; i++) {
     if (shadowData[i].x >= 0 && shadowData[i].y >= 0) {
-      Screen[40 * shadowData[i].y + shadowData[i].x] = 0x20;
+      Screen[40 * shadowData[i].y + shadowData[i].x] = CHAR_EMPTY;
     }
   }
 }
@@ -27,7 +27,11 @@ void hideShadow() {
 void showShadow() {
   for (char i = 0; i < 6; i++) {
     if (shadowData[i].x >= 0 && shadowData[i].y >= 0) {
-      Screen[40 * shadowData[i].y + shadowData[i].x] = 43;
+      if(false && TheGame.currentTile.color == VCOL_ORANGE) {
+        Screen[40 * shadowData[i].y + shadowData[i].x] = 133;
+      } else {
+        Screen[40 * shadowData[i].y + shadowData[i].x] = CHAR_SHADOW;
+      }
       Color[40 * shadowData[i].y + shadowData[i].x] = TheGame.currentTile.color;
     }
   }
@@ -100,9 +104,12 @@ void drawShadow() {
           char screenX = (BOWLSTARTX / BLOCKSIZE) + shadowStartX + x;
           char screenY = (BOWLSTARTY / BLOCKSIZE) + shadowStartY + y;
           
-          Screen[40 * screenY + screenX] = 43; // Shadow character
+          if(false && TheGame.currentTile.color == VCOL_ORANGE) {
+            Screen[40 * screenY + screenX] = 133;
+          } else {
+            Screen[40 * screenY + screenX] = CHAR_SHADOW;
+          }
           Color[40 * screenY + screenX] = TheGame.currentTile.color;
-          
           shadowData[c].x = screenX;
           shadowData[c].y = screenY;
           c++;

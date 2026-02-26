@@ -8,6 +8,8 @@ void cascadeLineSpr(char line);
 void spiralLineSpr(char line);
 void scroll_line_down(char line);
 void removeLine(unsigned char line);
+void addOrange(char* pos);
+void removeOrange(char* pos);
 
 #pragma compile("effects.c")
 

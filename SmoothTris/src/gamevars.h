@@ -23,11 +23,30 @@
 #define SIDE_LATE_PIXELS 3   // how many pixels at the end of the 8px fall
 #define SIDE_ALLOW_FROM  (BLOCKSIZE - SIDE_LATE_PIXELS)  // 8-3=5
 #define PREVIEWX 30
-#define PREVIEWY 3
-#define BOWLCHARACTER 160
+#define PREVIEWY 2
+#define MULTICOLOR 1
+
 #define EXPLODELINEALGO 1
 
-//typedef unsigned char byte;
+// common character codes
+#define CHAR_BLOCK 160
+#define CHAR_EMPTY 32
+/*
+#define CHAR_EFFECT_FADE1 40
+#define CHAR_EFFECT_FADE2 41
+#define CHAR_EFFECT_FADE3 42
+#define CHAR_SHADOW 43
+*/
+#define CHAR_EFFECT_FADE1 129
+#define CHAR_EFFECT_FADE2 130
+#define CHAR_EFFECT_FADE3 131
+#define CHAR_SHADOW 132
+#define CHAR_BOWL 160
+#define CHAR_LINE_HORIZONTAL 64
+#define CHAR_LINE_BRANCH_DOWN 114
+#define CHAR_LINE_VERTICAL 93
+#define CHAR_LINE_CORNER_LOWER_LEFT 109
+#define CHAR_LINE_CORNER_LOWER_RIGHT 125
 
 
 extern byte* const Screen;
@@ -38,6 +57,7 @@ extern byte* const Charset;
 static unsigned char singleBlockCharacter = 160;
 
 extern const byte SpriteImage[64];
+extern const char MicroFont[];
 
 typedef struct t
 {
@@ -58,6 +78,7 @@ typedef struct {
   signed char y;
 } Vector2;
 
+
 extern const Vector2 KICK_DATA_GENERIC[8][5];
 extern const Vector2 KICK_DATA_I[8][5];
 
@@ -70,6 +91,12 @@ static unsigned char prev_w = 0;
 static unsigned char prev_z = 0;
 static unsigned char prev_space = 0;
 static unsigned char prev_p = 0;
+
+#define MAX_FLICKERS 120
+char* flicker_positions[MAX_FLICKERS];
+extern char active_flicker_count;
+
+
 
 typedef enum gs {
 	GS_READY,			// Getting ready
@@ -114,6 +141,7 @@ void game_keyboard(void);
 void redrawGrid(void);
 void putTile(void);
 void generate_scroll_chars(void);
+void music_play(void);
 
 #pragma compile("gamevars.c")
 
